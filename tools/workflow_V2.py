@@ -154,10 +154,12 @@ def execute_command_in_new_window(interpreter, root_path, port):
     else:
         # 对于 Linux，检查 'screen' 或 'tmux'
         try:
-            command = ["screen", "-dmS", "mysession", interpreter, root_path, "--port", str(port)]
+            # command = ["screen", "-dmS", "mysession", interpreter, root_path, "--port", str(port)]
+            command = ["screen", "-dmS", "mysession", interpreter, root_path, "--port", str(port), "--cuda-device", "1"]
         except FileNotFoundError:
             try:
-                command = ["tmux", "new-session", "-d", interpreter, root_path, "--port", str(port)]
+                #command = ["tmux", "new-session", "-d", interpreter, root_path, "--port", str(port)]
+                command = ["tmux", "new-session", "-d", interpreter, root_path, "--port", str(port), "--cuda-device", "1"]
             except FileNotFoundError:
                 print("错误：未找到合适的终端复用器。请安装 screen 或 tmux。")
                 return
