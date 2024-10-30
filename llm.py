@@ -1439,9 +1439,14 @@ class LLM_local_loader:
             self.model_name_or_path = model_name_or_path
             self.device = device
             self.dtype = dtype
-            model_kwargs = {
-                'device_map': device,
-            }
+            if device == "cuda:1":
+                model_kwargs = {
+                    'device': device,
+                }
+            else:
+                model_kwargs = {
+                    'device_map': device,
+                }
 
             if dtype == "float16":
                 model_kwargs['torch_dtype'] = torch.float16
