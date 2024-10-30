@@ -1495,7 +1495,7 @@ class easy_LLM_local_loader:
             "required": {
                 "model_name_or_path": (LLM_list, {"default": ""}),
                 "device": (
-                    ["auto", "cuda", "cpu", "mps"],
+                    ["auto", "cuda","cuda:1", "cpu", "mps"],
                     {
                         "default": "auto",
                     },
@@ -1549,6 +1549,10 @@ class easy_LLM_local_loader:
                 torch.cuda.empty_cache()
                 gc.collect()
             # 对于 CPU 和 MPS 设备，不需要清空 CUDA 缓存
+            if self.device == "cuda:1":
+                torch.cuda.empty_cache()
+                gc.collect()
+            
             elif self.device == "cpu" or self.device == "mps":
                 gc.collect()
             self.model = ""
@@ -1556,9 +1560,17 @@ class easy_LLM_local_loader:
             self.model_name_or_path = model_name_or_path
             self.device = device
             self.dtype = dtype
-            model_kwargs = {
-                'device_map': device,
+            if self.device == "cuda:1":
+            # 指定GPU编号，例如使用第一个GPU
+            gpu_id = 1
+            newdevice = torch.device(f"cuda:{gpu_id}" if torch.cuda.is_available() else "cpu")
+               model_kwargs = {
+                'device_map': newdevice,
             }
+            else:
+                model_kwargs = {
+                    'device_map': device,
+                }
 
             if dtype == "float16":
                 model_kwargs['torch_dtype'] = torch.float16
