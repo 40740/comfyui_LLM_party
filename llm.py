@@ -1376,7 +1376,7 @@ class LLM_local_loader:
             "required": {
                 "model_name_or_path": ("STRING", {"default": ""}),
                 "device": (
-                    ["auto", "cuda", "cpu", "mps"],
+                    ["auto", "cuda", "cuda:1", "cpu", "mps"],
                     {
                         "default": "auto",
                     },
@@ -1426,6 +1426,9 @@ class LLM_local_loader:
             del self.model
             del self.tokenizer
             if self.device == "cuda":
+                torch.cuda.empty_cache()
+                gc.collect()
+            if self.device == "cuda:1":
                 torch.cuda.empty_cache()
                 gc.collect()
             # 对于 CPU 和 MPS 设备，不需要清空 CUDA 缓存
