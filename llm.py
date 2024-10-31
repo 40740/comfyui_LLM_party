@@ -1439,14 +1439,13 @@ class LLM_local_loader:
             self.model_name_or_path = model_name_or_path
             self.device = device
             self.dtype = dtype
-            if device == "cuda:1":
-                model_kwargs = {
-                    'device': device,
-                }
+            if self.device == "cuda:1":
+            # 指定GPU编号，例如使用第一个GPU
+               gpu_id = 1
+               newdevice = torch.device(f"cuda:{gpu_id}" if torch.cuda.is_available() else "cpu")
+               model_kwargs = {'device_map': newdevice,}
             else:
-                model_kwargs = {
-                    'device_map': device,
-                }
+                model_kwargs = {'device_map': device,}
 
             if dtype == "float16":
                 model_kwargs['torch_dtype'] = torch.float16
