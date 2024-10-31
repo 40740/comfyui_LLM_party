@@ -4,6 +4,7 @@ from transformers import AutoModel, AutoTokenizer
 import locale
 import numpy as np
 from PIL import Image
+import torch
 import os
 current_dir_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # 在current_dir_path下创建一个名为output的文件夹
@@ -11,6 +12,13 @@ output_dir_path = os.path.join(current_dir_path, 'output')
 if not os.path.exists(output_dir_path):
     os.makedirs(output_dir_path)
 def perform_ocr(model_name_or_path, device, ocr_type, image_path,ocr_box, ocr_color, multi_crop,render,out_dir_path):
+    
+    if device == "cuda:1":
+        gpu_id = 1
+        device = torch.device(f"cuda:{gpu_id}" if torch.cuda.is_available() else "cpu")
+    if device == "cuda:0":
+        gpu_id = 0
+        device = torch.device(f"cuda:{gpu_id}" if torch.cuda.is_available() else "cpu")
     # Load the tokenizer and model
     tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, trust_remote_code=True)
     model = AutoModel.from_pretrained(model_name_or_path, trust_remote_code=True, low_cpu_mem_usage=True, device_map=device, use_safetensors=True, pad_token_id=tokenizer.eos_token_id)
@@ -32,7 +40,7 @@ class got_ocr:
         return {
             "required": {
                 "model_name_or_path": ("STRING", {"default": ""}),
-                "device": (["auto","cuda", "cpu", "mps"], {"default": "auto"}),
+                "device": (["auto","cuda","cuda:1","cuda:0", "cpu", "mps"], {"default": "auto"}),
                 "ocr_type": (["ocr","format"], {"default": "format"}),
                 "image": ("IMAGE", {}),
                 "is_enable": ("BOOLEAN", {"default": True}),
