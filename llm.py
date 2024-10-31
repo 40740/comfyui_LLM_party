@@ -1562,11 +1562,11 @@ class easy_LLM_local_loader:
             self.dtype = dtype
             if self.device == "cuda:1":
             # 指定GPU编号，例如使用第一个GPU
-            gpu_id = 1
-            newdevice = torch.device(f"cuda:{gpu_id}" if torch.cuda.is_available() else "cpu")
-               model_kwargs = {
-                'device_map': newdevice,
-            }
+                gpu_id = 1
+                newdevice = torch.device(f"cuda:{gpu_id}" if torch.cuda.is_available() else "cpu")
+                   model_kwargs = {
+                    'device_map': newdevice,
+                }
             else:
                 model_kwargs = {
                     'device_map': device,
