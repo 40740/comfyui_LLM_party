@@ -22,8 +22,8 @@ def perform_ocr(model_name_or_path, device, ocr_type, image_path,ocr_box, ocr_co
     # Load the tokenizer and model
     tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, trust_remote_code=True)
     model = AutoModel.from_pretrained(model_name_or_path, trust_remote_code=True, low_cpu_mem_usage=True, device_map=device, use_safetensors=True, pad_token_id=tokenizer.eos_token_id)
-    model = model.eval()
     model = model.to(device=device,  dtype=torch.float16)
+    model = model.eval()
     
     if render:    
         html_path = os.path.join(out_dir_path, 'render.html')
